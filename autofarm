@@ -173,7 +173,8 @@ local sNames = {
 	'boothPosition',
 	'standingPosition',
 	'AnonymousMode',
-	'boothSwitcher'
+	'boothSwitcher',
+	'serverHopAfterDonation'
 }
 local sValues = {
 	true,
@@ -212,6 +213,7 @@ local sValues = {
 	false,
 	3,
 	'Front',
+	false,
 	false,
 	false
 }
@@ -723,6 +725,7 @@ local danceDropdown = otherTab:AddDropdown("[ " .. getgenv().settings.danceChoic
 		Players:Chat("/e dance" .. object)
 	end
 end)
+
 danceDropdown:Add("Disabled")
 danceDropdown:Add("1")
 danceDropdown:Add("2")
@@ -783,8 +786,13 @@ end)
 
 boothSwitch:Set(getgenv().settings.boothSwitcher)
 
+local sHopSwitch = otherTab:AddSwitch('ServerHop after donation',function(bool)
+	getgenv().settings.serverHopAfterDonation = bool
+	saveSettings()
+end)
 
-render:Set(getgenv().settings.render)
+sHopSwitch:Set(getgenv().settings.serverHopAfterDonation)
+
 if setfpscap and type(setfpscap) == "function" then
 	local fpsLimit = otherTab:AddSlider("FPS Limit", function(x)
 		if settingsLock then
@@ -801,6 +809,8 @@ if setfpscap and type(setfpscap) == "function" then
 	fpsLimit:Set((getgenv().settings.fpsLimit / 60) * 100)
 	setfpscap(getgenv().settings.fpsLimit)
 end
+
+render:Set(getgenv().settings.render)
 
 boothTab:Show()
 library:FormatWindows()
@@ -880,7 +890,12 @@ Players.LocalPlayer.leaderstats.Raised.Changed:Connect(function()
 	if getgenv().settings.webhookToggle and getgenv().settings.webhookBox then
 		local LogService = Game:GetService("LogService")
 		local logs = LogService:GetLogHistory()
-		webhook("💰 Tip | Amount: " .. tostring(Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) .. 'R$ | Total: ' .. tostring(Players.LocalPlayer.leaderstats.Raised.Value) .. 'R$ | Account: ' .. Players.LocalPlayer.DisplayName .. ' (' .. Players.LocalPlayer.Name .. ')')
+		webhook("💰 Tip | Amount: " .. tostring(Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) .. 'R$ (after tax: ' .. tostring(math.floor(Players.LocalPlayer.leaderstats.Raised - RaisedC * 0.6)) .. 'R$) | Total: ' .. tostring(Players.LocalPlayer.leaderstats.Raised.Value) .. 'R$ | Account: ' .. Players.LocalPlayer.DisplayName .. ' (' .. Players.LocalPlayer.Name .. ')')
+	end
+	if getgenv().settings.serverHopAfterDonation then
+		task.spawn(function()
+			serverHop()
+		end)
 	end
 	if getgenv().settings.donationJump then
 		task.spawn(function()
