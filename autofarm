@@ -166,9 +166,7 @@ local sNames = {
 	'boothPosition',
 	'standingPosition',
 	'AnonymousMode',
-	'minimumPlayers',
-	'minimumDonated',
-	'boothSettings'
+	'boothSwitcher'
 }
 local sValues = {
 	true,
@@ -208,8 +206,6 @@ local sValues = {
 	3,
 	'Front',
 	false,
-	1,
-	0,
 	false
 }
 if #getgenv().settings ~= sNames then
@@ -797,6 +793,7 @@ if setfpscap and type(setfpscap) == "function" then
 	fpsLimit:Set((getgenv().settings.fpsLimit / 60) * 100)
 	setfpscap(getgenv().settings.fpsLimit)
 end
+
 boothTab:Show()
 library:FormatWindows()
 settingsLock = false
