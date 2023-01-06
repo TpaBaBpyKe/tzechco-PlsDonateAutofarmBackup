@@ -3,9 +3,7 @@
 	You are not allowed to claim this as your own.
 	Removal of initial credits to the authors is prohibited.
 ]]
-
-
-if hookmetamethod then
+  if hookmetamethod and typeof(hookmetamethod) == 'function' then
 	local oldHook
 	oldHook = hookmetamethod(game, "__namecall", function(self, ...)
 		if getnamecallmethod() == "IsVoiceEnabledForUserIdAsync" then
@@ -14,12 +12,21 @@ if hookmetamethod then
 		return oldHook(self, ...)
 	end)
 end
-  
-  --Wait until game loads
 repeat
-	wait()
+	task.wait()
 until game:IsLoaded()
-  
+
+if isfile and writefile and typeof(isfile) == 'function' and typeof(writefile) == 'function' then
+	if not isfile('PromptedDiscordCFCommunity.txt') then
+		writefile('PromptedDiscordCFCommunity.txt', game:GetService('HttpService'):JSONEncode('hi'))
+		local Module = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Source.lua"))()
+		Module.Prompt({
+			invite = "https://discord.gg/fNeggqVMZs",
+			name = "bugs & suggestions",
+		})
+	end
+end
+
   --Stops script if on a different game
 if game.PlaceId ~= 8737602449 and game.PlaceId ~= 8943844393 then
 	return
@@ -376,7 +383,7 @@ local chatTab = Window:AddTab("Chat")
 local webhookTab = Window:AddTab("Webhook")
 local serverHopTab = Window:AddTab("Server")
 local otherTab = Window:AddTab("Other")
-local bThemes = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("ScreenGui"):WaitForChild("BoothSettings"):WaitForChild("ScrollingFrame"):WaitForChild("ChangeTheme"):WaitForChild("Themes")
+local bThemes = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("ScreenGui"):WaitForChild("BoothSettings"):WaitForChild("ScrollingFrame"):WaitForChild("ChangeTheme"):WaitForChild("Themes")
   
   --Booth Settings
 local textUpdateToggle = boothTab:AddSwitch("Text Update", function(bool)
@@ -775,6 +782,7 @@ local boothSwitch = otherTab:AddSwitch('Booth Switcher',function(bool)
 end)
 
 boothSwitch:Set(getgenv().settings.boothSwitcher)
+
 
 render:Set(getgenv().settings.render)
 if setfpscap and type(setfpscap) == "function" then
