@@ -3,7 +3,7 @@
 	You are not allowed to claim this as your own.
 	Removal of initial credits to the authors is prohibited.
 ]]
-  if hookmetamethod and typeof(hookmetamethod) == 'function' then
+if hookmetamethod and typeof(hookmetamethod) == 'function' then
 	local oldHook
 	oldHook = hookmetamethod(game, "__namecall", function(self, ...)
 		if getnamecallmethod() == "IsVoiceEnabledForUserIdAsync" then
@@ -867,6 +867,7 @@ local function walkToBooth()
 	Controls:Enable()
 	game:GetService('VirtualInputManager'):SendKeyEvent(false, "LeftControl", false, game)
 	Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(Players.LocalPlayer.Character.HumanoidRootPart.Position, Vector3.new(40, 14, 101)))
+	Players:Chat('/e ' .. getgenv().settings.danceChoice)
 end
 walkToBooth()
 if getgenv().settings.autoBeg then
