@@ -938,9 +938,9 @@ msgdone.OnClientEvent:Connect(function(msgdata)
 		local chatChar = plrChatted.Character
 		if (plrChatted.Character and plrChatted.Character.Humanoid.RootPart) then
 			local root = chatChar.Humanoid.RootPart
-			if (root.Position - game:GetService('Players').LocalPlayer.Character.Humanoid.RootPart.Position).Magnitude < 10 then
+			if (root.Position - game:GetService('Players').LocalPlayer.Character.Humanoid.RootPart.Position).Magnitude < 11 then
 				if message == 'hello' or message == 'hi' or message == 'sup' then
-					messageRequest:FireServer("hello", 'All')
+					messageRequest:FireServer("hello " .. game:GetService('Players')[speaker].DisplayName, 'All')
 				elseif string.find(message, 'jump') then
 					messageRequest:FireServer('ok', 'All')
 				elseif string.find(message, '?') then
