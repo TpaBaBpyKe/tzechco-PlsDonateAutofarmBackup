@@ -200,9 +200,11 @@ end
 
 local function playerChecker(player)
     if Toggles.ServerHopIfMod.Value == false then return end
-    if player:GetRankInGroup(12121240) >= 254 then
-        serverHop()
-    end
+	pcall(function()
+		if player:GetRankInGroup(12121240) >= 254 then
+			serverHop()
+		end
+	end)
 end
 
 local function hex(c3)
@@ -452,8 +454,8 @@ miscMain:AddInput('addBegMsgInput', {
     Numeric = false,
     Finished = true, 
     Text = 'Add beg message',
-    Tooltip = 'Will add a beg message',
-    Placeholder = 'Beg message',
+    Tooltip = 'adds a beg msg [PRESS ENTER AFTER TYPED]',
+    Placeholder = 'Beg message ',
 })
 
 miscMain:AddInput('autoThanksInput', {
@@ -461,7 +463,7 @@ miscMain:AddInput('autoThanksInput', {
     Numeric = false, 
     Finished = true,
     Text = 'Add AutoThanks message',
-    Tooltip = 'Will add a AutoThanks message',
+    Tooltip = 'adds thank msg [PRESS ENTER AFTER TYPED]',
     Placeholder = 'AutoThanks message',
 })
 
@@ -470,7 +472,7 @@ miscMain:AddInput('webhookInputT', {
     Numeric = false, 
     Finished = false,
     Text = 'Webhook',
-    Tooltip = 'Discord/Guilded webhook',
+    Tooltip = 'Discord/Guilded webhook [PRESS ENTER AFTER TYPED]',
     Placeholder = 'Webhook',
 })
 
