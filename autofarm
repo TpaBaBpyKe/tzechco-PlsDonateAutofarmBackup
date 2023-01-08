@@ -755,7 +755,7 @@ msgdone.OnClientEvent:Connect(function(msgdata)
 	local message = string.lower(msgdata.Message)
 	task.wait(1.4 + math.random(0.1,0.4))
 	local plrChatted = game:GetService('Players')[speaker] or nil
-	if (plrChatted and plrChatted == game:GetService('Players').LocalPlayer) or Toggles.AutoNearReply == false or not plrChatted then
+	if (plrChatted and plrChatted == game:GetService('Players').LocalPlayer) or Toggles.AutoNearReply.Value == false or not plrChatted then
 		return
 	end
 	pcall(function()
