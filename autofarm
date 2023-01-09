@@ -124,12 +124,12 @@ local sNames = {
 local sValues = {
 	{
 		'Duckie Shirt on sale!',
-		'Every robux = I jump'
-		'Duckie killer shirt on sale for a limited time!'
-		'Cute duckie is my new shirt!'
-		'Duck hoodie is my most popular item!'
-		'Dono Pls 🥺!'
-		'Every donation = more shirts'
+		'Every robux = I jump',
+		'Duckie killer shirt on sale for a limited time!',
+		'Cute duckie is my new shirt!',
+		'Duck hoodie is my most popular item!',
+		'Dono Pls 🥺!',
+		'Every donation = more shirts',
 		'Please donate 😃'
 	},
 	{
