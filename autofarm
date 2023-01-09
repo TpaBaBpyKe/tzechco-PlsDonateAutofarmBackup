@@ -258,9 +258,11 @@ local function update()
 			task.wait(3)
 		end
 	end
-	if Toggles.EquipSignT.Value == true and Players.LocalPlayer.Backpack:FindFirstChild('DonateSign') then
+	if Toggles.EquipSignT.Value == true then
 		local sign = Players.LocalPlayer.Backpack:FindFirstChild('DonateSign')
-		sign.Parent = Players.LocalPlayer.Character
+		if sign then
+		   sign.Parent = Players.LocalPlayer.Character
+		end
 		task.wait(0.3)
 		task.spawn(function()
 			while task.wait(10) do
