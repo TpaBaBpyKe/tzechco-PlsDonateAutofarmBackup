@@ -782,11 +782,8 @@ msgdone.OnClientEvent:Connect(function(msgdata)
 		end
 	end)
 end)
-
-task.spawn(function()
 	while task.wait(Options.AutoSHMinutes.Value * 60) do
 		if not hopTimer then
 			hopSet()
 		end
 	end
-end)
