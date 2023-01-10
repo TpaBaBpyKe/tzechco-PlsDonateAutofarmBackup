@@ -902,6 +902,7 @@ Players.LocalPlayer.leaderstats.Raised.Changed:Connect(function()
 		task.spawn(function()
 			for i = 1, game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC do
 				game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+                                task.wait(0.1)
 				repeat
 					task.wait()
 				until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Landed or game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
