@@ -98,7 +98,7 @@ local booths = {
 local queueonteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
 local httprequest = (syn and syn.request) or http and http.request or http_request or (fluxus and fluxus.request) or request
 local httpservice = game:GetService('HttpService')
-queueonteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/CF-Trail/tzechco-PlsDonateAutofarmBackup/main/old.lua'))()")
+queueonteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/CF-Trail/tzechco-PlsDonateAutofarmBackup/main/autofarm'))()")
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CF-Trail/tzechco-PlsDonateAutofarmBackup/main/UI"))()
 local function claimGifts()
 	pcall(function()
@@ -175,7 +175,8 @@ local sNames = {
 	'standingPosition',
 	'AnonymousMode',
 	'boothSwitcher',
-	'serverHopAfterDonation'
+	'serverHopAfterDonation',
+	'jumpsPerRobux'
 }
 local sValues = {
 	true,
@@ -194,7 +195,7 @@ local sValues = {
 		"tysm!"
 	},
 	false,
-	"✅ 1 ROBUX DONATED = 1 JUMP ✅",
+	"✅ 1 ROBUX DONATED = $D JUMP ✅",
 	false,
 	"your text here",
 	"#ffffff",
@@ -216,7 +217,8 @@ local sValues = {
 	'Front',
 	false,
 	false,
-	false
+	false,
+	1
 }
 if #getgenv().settings ~= sNames then
 	for i, v in ipairs(sNames) do
@@ -328,6 +330,7 @@ local function update()
 	if getgenv().settings.textUpdateToggle and getgenv().settings.customBoothText then
 		text = string.gsub(getgenv().settings.customBoothText, "$C", current)
 		text = string.gsub (text, "$G", goal)
+		text = string.gsub(text,'$D',tostring(getgenv().settings.jumpsPerRobux))
 		boothText = tostring('<font color="' .. getgenv().settings.hexBox .. '">' .. text .. '</font>')
 		  --Updates the booth text
 		local myBooth = Players.LocalPlayer.PlayerGui.MapUIContainer.MapUI.BoothUI:FindFirstChild(tostring("BoothUI" .. unclaimed[1]))
@@ -480,9 +483,8 @@ boothTab:AddButton("Save", function()
 		update()
 	end
 end)
-local helpLabel = boothTab:AddLabel("$C = Current, $G = Goal, 221 Character Limit")
+local helpLabel = boothTab:AddLabel("$C = Current, $G = Goal, $D = Robux per jump, 221 Character Limit")
 helpLabel.TextSize = 9
-helpLabel.TextXAlignment = Enum.TextXAlignment.Center
   --Sign Settings
 pcall(function()
 	if game:GetService("MarketplaceService"):UserOwnsGamePassAsync(Players.LocalPlayer.UserId, 28460459) then
@@ -765,32 +767,24 @@ if getgenv().settings.AnonymousMode then
 	require(game:GetService('ReplicatedStorage').Remotes).Event('SetDonatedVisibility'):FireServer(false)
 end
 
-function startBoothSwitching()
-	while task.wait() do
-		if not getgenv().settings.boothSwitcher then break end
-		for i,v in next, bThemes:GetChildren() do
-			if v:IsA("TextButton") and v.Visible == true and getgenv().settings.boothSwitcher then
-			   require(game:GetService('ReplicatedStorage').Remotes).Event("EditBoothModel"):FireServer(v.Name)
-			   task.wait(3)
-			end
-		end
-	end
-end
-
-local boothSwitch = otherTab:AddSwitch('Booth Switcher',function(bool)
-	getgenv().settings.boothSwitcher = bool
-	task.spawn(function()
-		startBoothSwitching()
-	end)
-	saveSettings()
-end)
-
-boothSwitch:Set(getgenv().settings.boothSwitcher)
-
 local sHopSwitch = otherTab:AddSwitch('ServerHop after donation',function(bool)
 	getgenv().settings.serverHopAfterDonation = bool
 	saveSettings()
 end)
+
+local jumpsPerRB = otherTab:AddSlider("Jumps per robux", function(x)
+	if settingsLock then
+		return
+	end
+	getgenv().settings.jumpsPerRobux = x
+	coroutine.wrap(slider)(getgenv().settings.jumpsPerRobux, "jumpsPerRobux")
+end,
+  {
+	["min"] = 0,
+	["max"] = 100
+})
+
+jumpsPerRB:Set(getgenv().settings.jumpsPerRobux)
 
 sHopSwitch:Set(getgenv().settings.serverHopAfterDonation)
 
@@ -891,7 +885,8 @@ Players.LocalPlayer.leaderstats.Raised.Changed:Connect(function()
 	if getgenv().settings.webhookToggle and getgenv().settings.webhookBox then
 		local LogService = Game:GetService("LogService")
 		local logs = LogService:GetLogHistory()
-		webhook("💰 Tip | Amount: " .. tostring(Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) .. 'R$ (after tax: ' .. tostring(math.floor((Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) * 0.6)) .. 'R$) | Total: ' .. tostring(Players.LocalPlayer.leaderstats.Raised.Value) .. 'R$ | Account: ' .. Players.LocalPlayer.DisplayName .. ' (' .. Players.LocalPlayer.Name .. ')')	end
+		webhook("💰 Tip | Amount: " .. tostring(Players.LocalPlayer.leaderstats.Raised.Value - RaisedC) .. 'R$ (after tax: ' .. tostring(math.floor(Players.LocalPlayer.leaderstats.Raised - RaisedC * 0.6)) .. 'R$) | Total: ' .. tostring(Players.LocalPlayer.leaderstats.Raised.Value) .. 'R$ | Account: ' .. Players.LocalPlayer.DisplayName .. ' (' .. Players.LocalPlayer.Name .. ')')
+	end
 	if getgenv().settings.serverHopAfterDonation then
 		task.spawn(function()
 			serverHop()
@@ -899,12 +894,20 @@ Players.LocalPlayer.leaderstats.Raised.Changed:Connect(function()
 	end
 	if getgenv().settings.donationJump then
 		task.spawn(function()
-			for i = 1, game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC do
-				game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
-                                task.wait(0.1)
-				repeat
-					task.wait()
-				until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Landed or game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
+			if getgenv().settings.jumpsPerRobux == 1 then
+				for i = 1, game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC do
+					game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+					repeat
+						task.wait()
+					until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
+				end
+			else
+				for i = 1, (game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC) * getgenv().settings.jumpsPerRobux do
+					game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+					repeat
+						task.wait()
+					until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
+				end
 			end
 		end)
 	end
