@@ -503,6 +503,16 @@ miscMain:AddSlider('BegDelaySlid', {
     Compact = false,
 })
 
+miscMain:AddSlider('jumpsPerRobux', {
+	Text = 'Jumps per robux',
+    Default = 1,
+    Min = 1,
+    Max = 50,
+    Rounding = 0,
+    Compact = false,
+})
+
+
 if setfpscap and typeof(setfpscap) == 'function' then
 	miscMain:AddSlider('FpsCapS',{
 		Text = 'Fps Cap',
@@ -729,14 +739,23 @@ Players.LocalPlayer.leaderstats.Raised.Changed:Connect(function()
 		end)
 	end
 	if Toggles.donationJumpToggle.Value == true then
-		task.spawn(function()
-			for i = 1, game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC do
-				game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
-				repeat
-					task.wait()
-				until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Landed or game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
-			end
-		end)
+			task.spawn(function()
+				if Options.jumpsPerRobux.Value == 1 then
+					for i = 1, game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC do
+						game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+						repeat
+							task.wait()
+						until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
+					end
+				else
+					for i = 1, (game:GetService('Players').LocalPlayer.leaderstats.Raised.value - RaisedC) * Options.jumpsPerRobux.Value do
+						game:GetService('Players').LocalPlayer.Character.Humanoid:ChangeState("Jumping")
+						repeat
+							task.wait()
+						until game:GetService('Players').LocalPlayer.Character.Humanoid:GetState() == Enum.HumanoidStateType.Running
+					end
+				end
+			end)
 	end
 	RaisedC = Players.LocalPlayer.leaderstats.Raised.value
 	if Toggles.AutoThanksq.Value == true then
