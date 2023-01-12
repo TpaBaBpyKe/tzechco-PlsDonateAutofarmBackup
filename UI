@@ -2,7 +2,6 @@
 	ui-engine-v2
 	version 1.3a
 	by Singularity (V3rm @ King Singularity) (Discord @ Singularity#5490)
-test
 --]]
 
 local ui_options = {
@@ -11,6 +10,9 @@ local ui_options = {
 	toggle_key = Enum.KeyCode.RightShift,
 	can_resize = true,
 }
+
+spawn = task.spawn
+wait = task.wait
 
 do
 	local imgui = game:GetService("CoreGui"):FindFirstChild("imgui")
@@ -894,7 +896,7 @@ local function gMouse()
 end
 
 local function ripple(button, x, y)
-	spawn(function()
+	task.spawn(function()
 		button.ClipsDescendants = true
 
 		local circle = Prefabs:FindFirstChild("Circle"):Clone()
@@ -969,7 +971,7 @@ function library:AddWindow(title, options)
 		local SplitFrame = Window:FindFirstChild("TabSelection"):FindFirstChild("Frame")
 		local Toggle = Bar:FindFirstChild("Toggle")
 
-		spawn(function()
+		task.spawn(function()
 			while true do
 				Bar.BackgroundColor3 = options.main_color
 				Base.BackgroundColor3 = options.main_color
@@ -1013,7 +1015,7 @@ function library:AddWindow(title, options)
 			if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
 				Held = true
 
-				spawn(function() -- Loop check
+				task.spawn(function() -- Loop check
 					if Entered and Resizer.Active and options.can_resize then
 						while Held and Resizer.Active do
 
@@ -1169,7 +1171,7 @@ function library:AddWindow(title, options)
 						button.ZIndex = button.ZIndex + (windows * 10)
 						button:GetChildren()[1].ZIndex = button:GetChildren()[1].ZIndex + (windows * 10)
 
-						spawn(function()
+						task.spawn(function()
 							while true do
 								if button and button:GetChildren()[1] then
 									button:GetChildren()[1].ImageColor3 = options.main_color
@@ -1201,7 +1203,7 @@ function library:AddWindow(title, options)
 						switch.ZIndex = switch.ZIndex + (windows * 10)
 						switch:GetChildren()[1].ZIndex = switch:GetChildren()[1].ZIndex + (windows * 10)
 
-						spawn(function()
+						task.spawn(function()
 							while true do
 								if switch and switch:GetChildren()[1] then
 									switch:GetChildren()[1].ImageColor3 = options.main_color
@@ -1297,7 +1299,7 @@ function library:AddWindow(title, options)
 								if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
 									Held = true
 
-									spawn(function() -- Loop check
+									task.spawn(function() -- Loop check
 										if Entered and not slider_options.readonly then
 											while Held and (not dropdown_open) do
 												local mouse_location = gMouse()
@@ -1403,7 +1405,7 @@ function library:AddWindow(title, options)
 
 						UIS.InputBegan:Connect(function(a, b)
 							if checks.binding then
-								spawn(function()
+								task.spawn(function()
 									wait()
 									checks.binding = false
 								end)
@@ -1578,7 +1580,7 @@ function library:AddWindow(title, options)
 								if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
 									Held = true
 
-									spawn(function() -- Loop check
+									task.spawn(function() -- Loop check
 										while Held and Entered1 and (not dropdown_open) do -- Palette
 											local mouse_location = gMouse()
 
@@ -1946,7 +1948,7 @@ function library:AddWindow(title, options)
 						folder.Parent = new_tab
 						button.Text = "      " .. folder_name
 
-						spawn(function()
+						task.spawn(function()
 							while true do
 								if button and button:GetChildren()[1] then
 									button:GetChildren()[1].ImageColor3 = options.main_color
@@ -1978,7 +1980,7 @@ function library:AddWindow(title, options)
 							open = not open
 						end)
 
-						spawn(function()
+						task.spawn(function()
 							while true do
 								Resize(folder, {Size = UDim2.new(1, 0, 0, (open and gFolderLen() or 20))}, options.tween_time)
 								wait()
