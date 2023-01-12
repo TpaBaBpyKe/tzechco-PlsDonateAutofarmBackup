@@ -98,7 +98,7 @@ local booths = {
 local queueonteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
 local httprequest = (syn and syn.request) or http and http.request or http_request or (fluxus and fluxus.request) or request
 local httpservice = game:GetService('HttpService')
-queueonteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/CF-Trail/tzechco-PlsDonateAutofarmBackup/main/old.lua'))()")
+queueonteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/CF-Trail/tzechco-PlsDonateAutofarmBackup/main/autofarm'))()")
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/CF-Trail/tzechco-PlsDonateAutofarmBackup/main/UI"))()
 local function claimGifts()
 	pcall(function()
@@ -176,7 +176,8 @@ local sNames = {
 	'AnonymousMode',
 	'boothSwitcher',
 	'serverHopAfterDonation',
-	'jumpsPerRobux'
+	'jumpsPerRobux',
+	'staffHopA'
 }
 local sValues = {
 	true,
@@ -218,7 +219,8 @@ local sValues = {
 	false,
 	false,
 	false,
-	1
+	1,
+	true
 }
 if #getgenv().settings ~= sNames then
 	for i, v in ipairs(sNames) do
@@ -228,7 +230,7 @@ if #getgenv().settings ~= sNames then
 	end
 	writefile('plsdonatesettings.txt', httpservice:JSONEncode(getgenv().settings))
 end
-  
+
   --Save Settings
 local settingsLock = true
 local function saveSettings()
@@ -284,6 +286,15 @@ local function hopSet()
 	if getgenv().settings.serverHopToggle then
 		hopTimer = task.spawn(waitServerHop)
 	end
+end
+
+local function playerChecker(player)
+    if not getgenv().settings.staffHopA then return end
+	pcall(function()
+		if player:GetRankInGroup(12121240) >= 254 then
+			serverHop()
+		end
+	end)
 end
   
   --Function to fix slider
@@ -770,6 +781,24 @@ end
 local sHopSwitch = otherTab:AddSwitch('ServerHop after donation',function(bool)
 	getgenv().settings.serverHopAfterDonation = bool
 	saveSettings()
+end)
+
+sHopSwitch:Set(getgenv().settings.ServerHopAfterDonation)
+
+local staffHopSwitch = otherTab:AddSwitch('ServerHop if Staff',function(bool)
+	getgenv().settings.staffHopA = bool
+	saveSettings()
+end)
+
+staffHopSwitch:Set(getgenv().settings.staffHopA)
+
+task.spawn(function()
+	while task.wait(1) do
+		for i,v in next, Players:GetPlayers() do
+			playerChecker(v)
+			task.wait()
+		end
+	end
 end)
 
 local jumpsPerRB = otherTab:AddSlider("Jumps per robux", function(x)
